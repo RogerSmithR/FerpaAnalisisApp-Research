@@ -1,0 +1,124 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HCI Research</title>
+	<meta name="author" content="David Grzyb">
+	<meta name="description" content="">
+
+	<!-- Tailwind -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+	<style>
+		import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
+
+		.font-family-karla {
+			font-family: karla;
+		}
+	</style>
+
+	<!-- AlpineJS -->
+	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+	<!-- Font Awesome -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+</head>
+<body class="bg-white font-family-karla">
+
+	<!-- Top Bar Nav -->
+	<nav class="w-full py-4 bg-blue-800 shadow">
+		<div class="w-full container mx-auto flex flex-wrap items-center justify-between">
+
+			<nav>
+				<ul class="flex items-center justify-between font-bold text-sm text-white uppercase no-underline">
+					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home">Home</a></li>
+					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home/About">About</a></li>
+				</ul>
+			</nav>
+
+			<div class="flex items-center font-bold text-sm text-white uppercase no-underline">
+				@if (SignInManager.IsSignedIn(User))
+				{
+					<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Manage/Index">Hello @User.Identity.Name!</a>
+					<a class="hover:text-gray-200 hover:underline px-4" href="/Identity/Account/Logout">Logout</a>
+				}
+				else
+				{
+					<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Register">Register</a>
+					<a class="hover:text-gray-200 hover:underline px-4" href="/Identity/Account/Login">Login</a>
+				}
+			</div>
+		</div>
+
+	</nav>
+
+	<!-- Text Header -->
+	<header class="w-full container mx-auto">
+		<div class="flex flex-col items-center py-12">
+			<a class="font-bold text-gray-800 uppercase hover:text-gray-700 text-5xl" href="#">
+				HCI Research
+			</a>
+			<p class="text-lg text-gray-600">
+				School of Computer Science - <a href="https://www.clemson.edu/">Clemson University</a>
+			</p>
+		</div>
+	</header>
+
+	<!-- Topic Nav -->
+	<nav class="w-full py-4 border-t border-b bg-gray-100" x-data="{ open: false }">
+		<div class="block sm:hidden">
+			<a href="#"
+			   class="block md:hidden text-base font-bold uppercase text-center flex justify-center items-center"
+			   @@click="open = !open">
+				Topics <i :class="open ? 'fa-chevron-down': 'fa-chevron-up'" class="fas ml-2"></i>
+			</a>
+		</div>
+		<div :class="open ? 'block': 'hidden'" class="w-full flex-grow sm:flex sm:items-center sm:w-auto">
+			<div class="w-full menu-item container mx-auto flex flex-col sm:flex-row items-center justify-center text-sm font-bold uppercase mt-0 px-6 py-2">
+				<a href="/home" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">Home</a>
+				<a href="/pii" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">PII</a>
+				<a href="/ferpa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">FERPA</a>
+				<a href="/hippa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">HIPAA</a>
+			</div>
+			@*<div class="w-full md:w-1/5 flex justify-rigth md:justify-start">
+				<img src="https://source.unsplash.com/collection/1346951/150x150?sig=1" class="rounded-full shadow h-10 w-10">
+				</div>*@
+		</div>
+	</nav>
+
+	<div class="container mx-auto flex flex-wrap py-6">
+		@RenderBody()
+	</div>
+
+	<footer class="w-full border-t bg-white pb-12">
+		<div class="w-full container mx-auto flex flex-col items-center">
+			<div class="flex flex-col md:flex-row text-center md:text-left md:justify-between py-6">
+				<a href="/Home/About" class="uppercase px-3">About Us</a>
+				<a href="/Home/Privacy" class="uppercase px-3">Privacy Policy</a>
+				<a href="/Home/Terms" class="uppercase px-3">Terms & Conditions</a>
+			</div>
+		</div>
+	</footer>
+	
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @RenderSection("Scripts", required: false)
+	<script>
+		(function () {
+			var current = '/' + location.pathname.split('/')[1];
+			if (current === "/"){
+				current += 'home'
+			}
+			var menuItems = document.querySelectorAll('.menu-item a');
+			for (var i = 0, len = menuItems.length; i < len; i++) {
+				if (menuItems[i].getAttribute("href") == current) {
+					menuItems[i].className += " bg-gray-300";
+					break;
+				}
+			}
+		})();
+	</script>
+</body>
+</html>

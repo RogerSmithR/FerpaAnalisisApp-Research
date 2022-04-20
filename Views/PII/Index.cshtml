@@ -1,0 +1,149 @@
+﻿@{
+	ViewData["Title"] = "PII";
+	Layout = "~/Views/Shared/_LayoutTailwind.cshtml";
+	int count = 1;
+}
+
+<!-- Post Section -->
+<section class="w-full md:w-2/3 flex flex-col items-center px-3">
+
+	<article class="flex flex-col shadow my-4">
+		<!-- Article Image -->
+		<a href="#" class="hover:opacity-75">
+			<img src="/content/pii.jpg" loading="lazy">
+		</a>
+		<div class="bg-white flex flex-col justify-start p-6">
+			<a href="#" class="text-3xl font-bold hover:text-gray-700 pb-4">PII Info & Questions</a>
+			<button type="button" onclick="playReading()" id="btnPlay" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full float-right" style="width:170px;margin-bottom:15px;">
+				<i class="fas fa-play"></i> Read content
+			</button>
+			<button type="button" onclick="pauseReading()" id="btnPause" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full float-right" style="width:100px;margin-bottom:15px;display:none">
+				<i class="fas fa-pause"></i> Pause
+			</button>
+			<button type="button" onclick="stopReading()" id="btnStop" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full float-right" style="width:100px;margin-bottom:15px;display:none">
+				<i class="fas fa-stop"></i> Stop
+			</button>
+			<p href="#" class="text-sm pb-8">
+				Published on April 11th, 2022
+			</p>
+			<p class="pb-3">PII (Personally Identifiable Information) is any data that could potentially identify or deanonymize an individual. This can be used alone or with other information to identify a person and can include things ranging from passport information to contact information. The technical definition of PII varies between institutions, however, the core principles of identifiability remain consistent. In addition to the more direct notion of a single piece of information constituting PII, another piece of unobtrusive info may become PII if related information is released that can make the information in question an identifier. As such, it is always important to understand how information on a person is dispersed and to understand your institution's policies and definitions regarding PII.</p>
+		</div>
+	</article>
+
+	<div class="w-full flex pt-6">
+		<a href="/home" class="w-1/2 bg-white shadow hover:shadow-md text-left p-6">
+			<p class="text-lg text-blue-800 font-bold flex items-center"><i class="fas fa-arrow-left pr-1"></i> Previous</p>
+			<p class="pt-2">Home</p>
+		</a>
+		<a href="/ferpa" class="w-1/2 bg-white shadow hover:shadow-md text-right p-6">
+			<p class="text-lg text-blue-800 font-bold flex items-center justify-end">Next <i class="fas fa-arrow-right pl-1"></i></p>
+			<p class="pt-2">FERPA Form</p>
+		</a>
+	</div>
+</section>
+
+<!-- Sidebar Section -->
+<aside class="w-full md:w-1/3 flex flex-col items-center px-3">
+
+	<div class="w-full bg-white shadow flex flex-col my-4 p-6">
+		<p class="text-xl font-semibold pb-5">Questionnaire</p>
+		<p class="pb-2">Instructions: Please select only one answer that you think is correct for each of the following questions.</p>
+
+		@foreach (var question in Model)
+		{
+			<hr class="mb-3 mt-3" />
+
+			<div class="block">
+
+				<span class="text-gray-700"><b>@count. @question.QuestionDescription</b></span>
+				<p id="txtWrongAnswer-@question.QuestionID" class="text-red-600" style="display:none;">Wrong answer!</p>
+				<p id="txtCorrectAnswer-@question.QuestionID" class="text-green-600" style="display:none;">Correct!</p>
+				<div class="mt-2">
+					@foreach (var answer in question.Answers)
+					{
+						<div>
+							<label class="inline-flex items-center">
+								<input type="radio" class="form-radio h-4 w-4" name="question-@question.QuestionID" value="@answer.Id">
+								<span class="ml-2">@answer.Answer</span>
+							</label>
+						</div>
+					}
+				</div>
+			</div>
+			count++;
+		}
+		<button id="btnSaveChange" type="button" onclick="saveData()" class="w-full bg-blue-800 text-white font-bold text-sm uppercase rounded hover:bg-blue-700 flex items-center justify-center px-2 py-3 mt-4">
+			<i class="fas fa-save" style="margin-right:15px;"></i> Save changes
+		</button>
+		<p id="txtGenerarError" class="text-red-600"></p>
+	</div>
+</aside>
+
+@section Scripts{
+<script>
+	var list = @Html.Raw(Json.Serialize(Model));
+	//console.log(list);
+	var audio = new Audio('/content/PII.mp3');
+	function playReading(){
+		$('#btnPlay').hide();
+		$('#btnPause').show();
+		$('#btnStop').show();
+		audio.play();
+	}
+	function pauseReading(){
+		$('#btnPlay').show();
+		$('#btnPlay').html('<i class="fas fa-play"></i> Continue');
+		$('#btnPause').hide();
+		$('#btnStop').show();
+		audio.pause();
+	}
+	function stopReading(){
+		$('#btnPlay').show();
+		$('#btnPlay').html('<i class="fas fa-play"></i> Read content');
+		$('#btnPause').hide();
+		$('#btnStop').hide();
+		audio.pause();
+		audio.currentTime = 0;
+	}
+	audio.addEventListener('ended', (event) => {
+		stopReading();
+	});
+	function saveData(){
+		var DocumentTypeID;
+		$('#btnSaveChange').html('Saving...');
+		$('#btnSaveChange').attr('disabled', true);
+		$('#txtGenerarError').html('');
+
+		var error = 0;
+		var TotalCorrect = 0;
+		for(var x=0;x<list.length;x++){
+			DocumentTypeID = list[x].documentTypeId;
+			var value = $('input[name="question-'+list[x].questionID+'"]:checked').val();;
+			if(value && value == list[x].correctAnswerNumber){
+				TotalCorrect++;
+				$('#txtCorrectAnswer-'+list[x].questionID).show();
+				$('#txtWrongAnswer-'+list[x].questionID).hide();
+			}else{
+				error++;
+				$('#txtCorrectAnswer-'+list[x].questionID).hide();
+				$('#txtWrongAnswer-'+list[x].questionID).show();
+			}
+		}
+		$.ajax({
+			url: '/HOME/SaveData',
+			type: 'POST',
+			data: { DocumentTypeID: DocumentTypeID , TotalCorrect: TotalCorrect  },
+			dataType: "json",
+			success: function () {
+				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
+				$('#btnSaveChange').attr('disabled', false);
+			},
+			error: function (result) {
+				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
+				$('#btnSaveChange').attr('disabled', false);
+				$('#txtGenerarError').html('<b>' + result.responseJSON + '</b>');
+			}
+		});
+	}
+</script>
+}

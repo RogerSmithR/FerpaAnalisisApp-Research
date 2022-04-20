@@ -1,0 +1,78 @@
+﻿@{
+	ViewData["Title"] = "Home";
+	Layout = "~/Views/Shared/_LayoutTailwind.cshtml";
+}
+
+<!-- Post Section -->
+<section class="w-full md:w-3/3 flex flex-col items-center px-3">
+	<div class="bg-white flex flex-col justify-start p-6">
+		<div class="shadow-lg rounded-lg overflow-hidden">
+			<div class="py-3 px-5 bg-gray-50">Correct answers by topic</div>
+			<canvas class="p-10" id="chartBar"></canvas>
+		</div>
+	</div>
+
+	<div class="shadow-lg rounded-lg overflow-hidden">
+		<div class="py-3 px-5 bg-gray-50">User by gender</div>
+		<canvas class="p-10" id="chartPie"></canvas>
+	</div>
+</section>
+
+<!-- Required chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart bar -->
+<script>
+	var labelsBarChart = @Html.Raw(Json.Serialize(ViewBag.labelsBarChart));
+	var labelsBarChartData = @Html.Raw(Json.Serialize(ViewBag.labelsBarChartData));
+
+	const dataBarChart = {
+	  labels: labelsBarChart,
+	  datasets: [
+		{
+		  label: "Questionary results",
+		  backgroundColor: "hsl(252, 82.9%, 67.8%)",
+		  borderColor: "hsl(252, 82.9%, 67.8%)",
+		  data: labelsBarChartData,
+		},
+	  ],
+	};
+
+	const configBarChart = {
+	  type: "bar",
+	  data: dataBarChart,
+	  options: {},
+	};
+
+	var chartBar = new Chart(
+	  document.getElementById("chartBar"),
+	  configBarChart
+	);
+</script>
+
+<!-- Chart pie -->
+<script>
+	const dataPie = {
+	  labels: ["Man", "Woman", "Unspecified"],
+	  datasets: [
+		{
+		  label: "Questionary by gender",
+		  data: [300, 50, 100],
+		  backgroundColor: [
+			"rgb(133, 105, 241)",
+			"rgb(164, 101, 241)",
+			"rgb(101, 143, 241)",
+		  ],
+		  hoverOffset: 4,
+		},
+	  ],
+	};
+
+	const configPie = {
+	  type: "pie",
+	  data: dataPie,
+	  options: {},
+	};
+
+	var chartBar = new Chart(document.getElementById("chartPie"), configPie);
+</script>
