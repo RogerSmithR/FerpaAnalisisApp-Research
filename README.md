@@ -1,12 +1,13 @@
-Project in Human and Computer Interaction Research - FerpaAnalisisApp.
+# Human and Computer Interaction Research - FerpaAnalisisApp
+[School of Computing](https://www.clemson.edu/cecas/departments/computing/) - [Clemson University](https://www.clemson.edu/)
 
 Demo: https://hciresearch.rsa13.com/
 
-Students
-Cullen Davis | cullend@clemson.edu
+Issues: https://github.com/RogerSmithR/FerpaAnalisisApp-Research/issues
 
-Roger Rivas | rrivasg@clemson.edu
+Team:
 
-Connor McCoy | jmccoy7@clemson.edu
-
-Kunal Bajaj | kbajaj@clemson.edu
+- [Cullen Davis](https://github.com/CDavis47) | cullend@clemson.edu
+- [Roger Rivas](https://github.com/RogerSmithR) | rrivasg@clemson.edu
+- [Connor McCoy](https://github.com/jcmccoysc) | jmccoy7@clemson.edu
+- [Kunal Bajaj](#) | kbajaj@clemson.edu
