@@ -1,4 +1,7 @@
 # Human and Computer Interaction Research - FerpaAnalisisApp
+
+![alt text](https://github.com/RogerSmithR/FerpaAnalisisApp-Research/blob/master/wwwroot/HCIProjectLogoT2.png?raw=true)
+
 [School of Computing](https://www.clemson.edu/cecas/departments/computing/) - [Clemson University](https://www.clemson.edu/)
 
 Demo: https://hciresearch.rsa13.com/
