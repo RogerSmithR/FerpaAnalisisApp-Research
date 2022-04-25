@@ -155,9 +155,12 @@ namespace FerpaAnalisisApp.Controllers
                     var totalQuestionPII = _context.Question.Where(x => x.DocumentTypeId == docTypePII).Count();
                     var totalQuestionHIPAA = _context.Question.Where(x => x.DocumentTypeId == docTypeHIPAA).Count();
 
-                    AllFERPACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA).TotalCorrect == totalQuestionFERPA;
-                    AllPIICompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypePII).TotalCorrect == totalQuestionPII;
-                    AllHIPAACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA).TotalCorrect == totalQuestionHIPAA;
+                    if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA))
+                        AllFERPACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA).TotalCorrect == totalQuestionFERPA;
+                    if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypePII))
+                        AllPIICompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypePII).TotalCorrect == totalQuestionPII;
+                    if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA))
+                        AllHIPAACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA).TotalCorrect == totalQuestionHIPAA;
                 }
                 return Json(new { status = "success", AllFERPACompleted, AllPIICompleted, AllHIPAACompleted });
             }
