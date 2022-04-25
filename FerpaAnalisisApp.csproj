@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-FerpaAnalisisApp-6399AB52-3B2D-4558-A1B4-8AC3A307CBA4</UserSecretsId>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <ApplicationManifest>wwwroot\site.webmanifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

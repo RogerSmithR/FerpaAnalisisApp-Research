@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FerpaAnalisisApp.Controllers
@@ -22,6 +23,36 @@ namespace FerpaAnalisisApp.Controllers
             this._hostEnvironment = hostEnvironment;
         }
 
+        public void UpdateMenu()
+        {
+            //MENU
+            bool AllFERPACompleted = false;
+            bool AllPIICompleted = false;
+            bool AllHIPAACompleted = false;
+            if (User.Identity.IsAuthenticated)
+            {
+                var docTypeFERPA = _context.DocumentType.FirstOrDefault(x => x.Title == "FERPA").DocumentTypeId;
+                var docTypePII = _context.DocumentType.FirstOrDefault(x => x.Title == "PII").DocumentTypeId;
+                var docTypeHIPAA = _context.DocumentType.FirstOrDefault(x => x.Title == "HIPAA").DocumentTypeId;
+
+                var userID = _context.Users.FirstOrDefault(x => x.UserName == User.Identity.Name).Id;
+
+                var totalQuestionFERPA = _context.Question.Where(x => x.DocumentTypeId == docTypeFERPA).Count();
+                var totalQuestionPII = _context.Question.Where(x => x.DocumentTypeId == docTypePII).Count();
+                var totalQuestionHIPAA = _context.Question.Where(x => x.DocumentTypeId == docTypeHIPAA).Count();
+
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA))
+                    AllFERPACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA).TotalCorrect == totalQuestionFERPA;
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypePII))
+                    AllPIICompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypePII).TotalCorrect == totalQuestionPII;
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA))
+                    AllHIPAACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA).TotalCorrect == totalQuestionHIPAA;
+            }
+            ViewBag.AllFERPACompleted = AllFERPACompleted;
+            ViewBag.AllPIICompleted = AllPIICompleted;
+            ViewBag.AllHIPAACompleted = AllHIPAACompleted;
+        }
+
         public IActionResult Index()
         {
             var labelsBarChart = new List<string>();
@@ -32,29 +63,44 @@ namespace FerpaAnalisisApp.Controllers
                 labelsBarChart.Add(item.Title);
                 var listStatistic = _context.StatisticDocumentType.Where(x => x.DocumentTypeId == item.DocumentTypeId).ToList();
                 var total = 0;
-				if (listStatistic.Any())
-				{
+                if (listStatistic.Any())
+                {
                     total = listStatistic.Select(x => x.TotalCorrect).DefaultIfEmpty(0).Sum();
                 }
                 labelsBarChartData.Add(total);
             }
             ViewBag.labelsBarChart = labelsBarChart.ToArray();
             ViewBag.labelsBarChartData = labelsBarChartData.ToArray();
+
+            var labelsPieChartData = new List<string>();
+            labelsPieChartData.Add(_context.Users.Count(x => x.Gender == "Male").ToString());
+            labelsPieChartData.Add(_context.Users.Count(x => x.Gender == "Female").ToString());
+            labelsPieChartData.Add(_context.Users.Count(x => x.Gender == "Not Specific" || string.IsNullOrEmpty(x.Gender)).ToString());
+            ViewBag.labelsPieChartData = labelsPieChartData;
+            UpdateMenu();
             return View();
         }
 
         public IActionResult Privacy()
         {
+            UpdateMenu();
             return View();
         }
 
         public IActionResult About()
         {
+            UpdateMenu();
             return View();
         }
 
         public IActionResult Terms()
         {
+            UpdateMenu();
+            return View();
+        }
+        public IActionResult FAQ()
+        {
+            UpdateMenu();
             return View();
         }
 
@@ -94,7 +140,26 @@ namespace FerpaAnalisisApp.Controllers
                     });
                 }
                 await _context.SaveChangesAsync();
-                return Json("success");
+
+                //UPDATE MENU
+                bool AllFERPACompleted = false;
+                bool AllPIICompleted = false;
+                bool AllHIPAACompleted = false;
+                if (User.Identity.IsAuthenticated)
+                {
+                    var docTypeFERPA = _context.DocumentType.FirstOrDefault(x => x.Title == "FERPA").DocumentTypeId;
+                    var docTypePII = _context.DocumentType.FirstOrDefault(x => x.Title == "PII").DocumentTypeId;
+                    var docTypeHIPAA = _context.DocumentType.FirstOrDefault(x => x.Title == "HIPAA").DocumentTypeId;
+
+                    var totalQuestionFERPA = _context.Question.Where(x => x.DocumentTypeId == docTypeFERPA).Count();
+                    var totalQuestionPII = _context.Question.Where(x => x.DocumentTypeId == docTypePII).Count();
+                    var totalQuestionHIPAA = _context.Question.Where(x => x.DocumentTypeId == docTypeHIPAA).Count();
+
+                    AllFERPACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA).TotalCorrect == totalQuestionFERPA;
+                    AllPIICompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypePII).TotalCorrect == totalQuestionPII;
+                    AllHIPAACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA).TotalCorrect == totalQuestionHIPAA;
+                }
+                return Json(new { status = "success", AllFERPACompleted, AllPIICompleted, AllHIPAACompleted });
             }
             catch (Exception ex)
             {

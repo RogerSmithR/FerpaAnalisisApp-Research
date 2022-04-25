@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en-us">
@@ -10,6 +10,14 @@
 	<title>HCI Research</title>
 	<meta name="author" content="David Grzyb">
 	<meta name="description" content="">
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">
 
 	<!-- Tailwind -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
@@ -36,19 +44,22 @@
 				<ul class="flex items-center justify-between font-bold text-sm text-white uppercase no-underline">
 					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home">Home</a></li>
 					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home/About">About</a></li>
+					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home/FAQ">FAQ</a></li>
 				</ul>
 			</nav>
 
 			<div class="flex items-center font-bold text-sm text-white uppercase no-underline">
 				@if (SignInManager.IsSignedIn(User))
 				{
-					<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Manage/Index">Hello @User.Identity.Name!</a>
-					<a class="hover:text-gray-200 hover:underline px-4" href="/Identity/Account/Logout">Logout</a>
+						<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Manage/Index">Hello @User.Identity.Name!</a>
+						<form class="hover:text-gray-200 hover:underline px-4" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+							<button type="submit" class="nav-link btn btn-link text-dark"><b>Logout</b></button>
+						</form>
 				}
 				else
 				{
-					<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Register">Register</a>
-					<a class="hover:text-gray-200 hover:underline px-4" href="/Identity/Account/Login">Login</a>
+						<a class="hover:text-gray-200 hover:underline px-4 text-sm" href="/Identity/Account/Register">Register</a>
+						<a class="hover:text-gray-200 hover:underline px-4" href="/Identity/Account/Login">Login</a>
 				}
 			</div>
 		</div>
@@ -58,7 +69,8 @@
 	<!-- Text Header -->
 	<header class="w-full container mx-auto">
 		<div class="flex flex-col items-center py-12">
-			<a class="font-bold text-gray-800 uppercase hover:text-gray-700 text-5xl" href="#">
+			<img src="/HCIProjectLogoT2.png" loading="lazy" />
+<a class="font-bold text-gray-800 uppercase hover:text-gray-700 text-5xl" href="#">
 				HCI Research
 			</a>
 			<p class="text-lg text-gray-600">
@@ -79,9 +91,9 @@
 		<div :class="open ? 'block': 'hidden'" class="w-full flex-grow sm:flex sm:items-center sm:w-auto">
 			<div class="w-full menu-item container mx-auto flex flex-col sm:flex-row items-center justify-center text-sm font-bold uppercase mt-0 px-6 py-2">
 				<a href="/home" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">Home</a>
-				<a href="/pii" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">PII</a>
-				<a href="/ferpa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">FERPA</a>
-				<a href="/hippa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">HIPAA</a>
+				<a id="lbPII" href="/pii" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">PII</a>
+				<a id="lbFERPA" href="/ferpa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">FERPA</a>
+				<a id="lbHIPAA" href="/hippa" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">HIPAA</a>
 			</div>
 			@*<div class="w-full md:w-1/5 flex justify-rigth md:justify-start">
 				<img src="https://source.unsplash.com/collection/1346951/150x150?sig=1" class="rounded-full shadow h-10 w-10">
@@ -97,15 +109,40 @@
 		<div class="w-full container mx-auto flex flex-col items-center">
 			<div class="flex flex-col md:flex-row text-center md:text-left md:justify-between py-6">
 				<a href="/Home/About" class="uppercase px-3">About Us</a>
+				<a href="/Home/FAQ" class="uppercase px-3">FAQ</a>
 				<a href="/Home/Privacy" class="uppercase px-3">Privacy Policy</a>
 				<a href="/Home/Terms" class="uppercase px-3">Terms & Conditions</a>
 			</div>
 		</div>
 	</footer>
-	
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    @RenderSection("Scripts", required: false)
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	@RenderSection("Scripts", required: false)
 	<script>
+		var tmpAllFERPACompleted = @Html.Raw(Json.Serialize(ViewBag.AllFERPACompleted));
+		var tmpAllPIICompleted = @Html.Raw(Json.Serialize(ViewBag.AllPIICompleted));
+		var tmpAllHIPAACompleted = @Html.Raw(Json.Serialize(ViewBag.AllHIPAACompleted));
+
+		function UpdateMenu(AllFERPACompleted, AllPIICompleted, AllHIPAACompleted){
+			if(AllFERPACompleted && AllFERPACompleted == true){
+				$('#lbFERPA').html('FERPA <i style="color:green;" class="fas fa-check-circle"></i>');
+			}else{
+				$('#lbFERPA').html('FERPA <i class="fas fa-info-circle"></i>');
+			}
+			if(AllPIICompleted && AllPIICompleted == true){
+				$('#lbPII').html('PII <i style="color:green;" class="fas fa-check-circle"></i>');
+			}else{
+				$('#lbPII').html('PII <i class="fas fa-info-circle"></i>');
+			}
+			if(AllHIPAACompleted && AllHIPAACompleted == true){
+				$('#lbHIPAA').html('HIPAA <i style="color:green;" class="fas fa-check-circle"></i>');
+			}else{
+				$('#lbHIPAA').html('HIPAA <i class="fas fa-info-circle"></i>');
+			}
+		}
+
+		UpdateMenu(tmpAllFERPACompleted, tmpAllPIICompleted, tmpAllHIPAACompleted);
+
 		(function () {
 			var current = '/' + location.pathname.split('/')[1];
 			if (current === "/"){

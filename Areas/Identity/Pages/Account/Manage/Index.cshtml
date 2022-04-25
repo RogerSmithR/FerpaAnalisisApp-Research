@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
+    var GenderList = new List<SelectListItem>
+    {
+        new SelectListItem {Text = "Not specified", Value = "Not Specific"},
+        new SelectListItem {Text = "Female", Value = "Female"},
+        new SelectListItem {Text = "Male", Value = "Male"},
+    };
 }
 
 <h4>@ViewData["Title"]</h4>
@@ -20,6 +26,12 @@
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
+            <div class="form-group">
+				<label asp-for="Input.Gender"></label>
+				<select asp-for="Input.Gender" asp-items="@GenderList" class="form-control">
+				</select>
+				<span asp-validation-for="Input.Gender" class="text-danger"></span>
+			</div>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>

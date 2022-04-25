@@ -1,6 +1,6 @@
 ﻿@{
-    ViewData["Title"] = "HIPPA";
-    Layout = "~/Views/Shared/_LayoutTailwind.cshtml";
+	ViewData["Title"] = "HIPPA";
+	Layout = "~/Views/Shared/_LayoutTailwind.cshtml";
 	int count = 1;
 }
 
@@ -68,10 +68,12 @@
 			</div>
 			count++;
 		}
+		<hr class="mb-3 mt-3" />
+		<p id="txtGenerarError" class="text-red-600"></p>
+		<p id="txtDataSaved" class="text-gree-600" style="display:none; color:green;"><b>Data saved <i class="fas fa-thumbs-up"></i></b></p>
 		<button id="btnSaveChange" type="button" onclick="saveData()" class="w-full bg-blue-800 text-white font-bold text-sm uppercase rounded hover:bg-blue-700 flex items-center justify-center px-2 py-3 mt-4">
 			<i class="fas fa-save" style="margin-right:15px;"></i> Save changes
 		</button>
-		<p id="txtGenerarError" class="text-red-600"></p>
 	</div>
 </aside>
 
@@ -130,9 +132,15 @@
 			type: 'POST',
 			data: { DocumentTypeID: DocumentTypeID , TotalCorrect: TotalCorrect  },
 			dataType: "json",
-			success: function () {
+			success: function (data) {
 				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
 				$('#btnSaveChange').attr('disabled', false);
+				$('#txtDataSaved').show();
+				setTimeout(function () {
+					$('#txtDataSaved').hide();
+				}, 3000);
+				//UPDATE MENU
+				UpdateMenu(data.allFERPACompleted, data.allPIICompleted, data.allHIPAACompleted);
 			},
 			error: function (result) {
 				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');

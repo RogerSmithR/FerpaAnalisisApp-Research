@@ -73,78 +73,88 @@
 			</div>
 			count++;
 		}
+		<hr class="mb-3 mt-3" />
+		<p id="txtGenerarError" class="text-red-600"></p>
+		<p id="txtDataSaved" class="text-gree-600" style="display:none; color:green;"><b>Data saved <i class="fas fa-thumbs-up"></i></b></p>
 		<button id="btnSaveChange" type="button" onclick="saveData()" class="w-full bg-blue-800 text-white font-bold text-sm uppercase rounded hover:bg-blue-700 flex items-center justify-center px-2 py-3 mt-4">
 			<i class="fas fa-save" style="margin-right:15px;"></i> Save changes
 		</button>
-		<p id="txtGenerarError" class="text-red-600"></p>
 	</div>
 </aside>
 
 @section Scripts{
 <script>
-	var list = @Html.Raw(Json.Serialize(Model));
-	//console.log(list);
-	var audio = new Audio('/content/FERPA.mp3');
-	function playReading(){
-		$('#btnPlay').hide();
-		$('#btnPause').show();
-		$('#btnStop').show();
-		audio.play();
-	}
-	function pauseReading(){
-		$('#btnPlay').show();
-		$('#btnPlay').html('<i class="fas fa-play"></i> Continue');
-		$('#btnPause').hide();
-		$('#btnStop').show();
-		audio.pause();
-	}
-	function stopReading(){
-		$('#btnPlay').show();
-		$('#btnPlay').html('<i class="fas fa-play"></i> Read content');
-		$('#btnPause').hide();
-		$('#btnStop').hide();
-		audio.pause();
-		audio.currentTime = 0;
-	}
-	audio.addEventListener('ended', (event) => {
-		stopReading();
-	});
-	function saveData(){
-		var DocumentTypeID;
-		$('#btnSaveChange').html('Saving...');
-		$('#btnSaveChange').attr('disabled', true);
-		$('#txtGenerarError').html('');
-
-		var error = 0;
-		var TotalCorrect = 0;
-		for(var x=0;x<list.length;x++){
-			DocumentTypeID = list[x].documentTypeId;
-			var value = $('input[name="question-'+list[x].questionID+'"]:checked').val();;
-			if(value && value == list[x].correctAnswerNumber){
-				TotalCorrect++;
-				$('#txtCorrectAnswer-'+list[x].questionID).show();
-				$('#txtWrongAnswer-'+list[x].questionID).hide();
-			}else{
-				error++;
-				$('#txtCorrectAnswer-'+list[x].questionID).hide();
-				$('#txtWrongAnswer-'+list[x].questionID).show();
-			}
+		var list = @Html.Raw(Json.Serialize(Model));
+		//console.log(list);
+		var audio = new Audio('/content/FERPA.mp3');
+		function playReading(){
+			$('#btnPlay').hide();
+			$('#btnPause').show();
+			$('#btnStop').show();
+			audio.play();
 		}
-		$.ajax({
-			url: '/HOME/SaveData',
-			type: 'POST',
-			data: { DocumentTypeID: DocumentTypeID , TotalCorrect: TotalCorrect  },
-			dataType: "json",
-			success: function () {
-				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
-				$('#btnSaveChange').attr('disabled', false);
-			},
-			error: function (result) {
-				$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
-				$('#btnSaveChange').attr('disabled', false);
-				$('#txtGenerarError').html('<b>' + result.responseJSON + '</b>');
-			}
+		function pauseReading(){
+			$('#btnPlay').show();
+			$('#btnPlay').html('<i class="fas fa-play"></i> Continue');
+			$('#btnPause').hide();
+			$('#btnStop').show();
+			audio.pause();
+		}
+		function stopReading(){
+			$('#btnPlay').show();
+			$('#btnPlay').html('<i class="fas fa-play"></i> Read content');
+			$('#btnPause').hide();
+			$('#btnStop').hide();
+			audio.pause();
+			audio.currentTime = 0;
+		}
+		audio.addEventListener('ended', (event) => {
+			stopReading();
 		});
-	}
+		function saveData(){
+			var DocumentTypeID;
+			$('#btnSaveChange').html('Saving...');
+			$('#btnSaveChange').attr('disabled', true);
+			$('#txtGenerarError').html('');
+
+			var error = 0;
+			var TotalCorrect = 0;
+			for(var x=0;x<list.length;x++){
+				DocumentTypeID = list[x].documentTypeId;
+				var value = $('input[name="question-'+list[x].questionID+'"]:checked').val();;
+				if(value && value == list[x].correctAnswerNumber){
+					TotalCorrect++;
+					$('#txtCorrectAnswer-'+list[x].questionID).show();
+					$('#txtWrongAnswer-'+list[x].questionID).hide();
+				}else{
+					error++;
+					$('#txtCorrectAnswer-'+list[x].questionID).hide();
+					$('#txtWrongAnswer-'+list[x].questionID).show();
+				}
+			}
+			$.ajax({
+				url: '/HOME/SaveData',
+				type: 'POST',
+				data: { DocumentTypeID: DocumentTypeID , TotalCorrect: TotalCorrect  },
+				dataType: "json",
+				success: function (data) {
+					$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
+					$('#btnSaveChange').attr('disabled', false);
+					$('#txtDataSaved').show();
+					setTimeout(function () {
+						$('#txtDataSaved').hide();
+					}, 3000);
+					//UPDATE MENU
+					UpdateMenu(data.allFERPACompleted, data.allPIICompleted, data.allHIPAACompleted);
+				},
+				error: function (result) {
+					if(result.responseJSON){
+						$('#txtGenerarError').html('<b>' + result.responseJSON + '</b>');
+					}
+					$('#btnSaveChange').html('<i class="fas fa-save" style="margin-right:15px;"></i> Save changes');
+					$('#btnSaveChange').attr('disabled', false);
+				}
+			});
+		}
 </script>
 }

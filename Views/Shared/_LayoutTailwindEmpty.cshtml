@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en-us">
@@ -36,6 +36,7 @@
 				<ul class="flex items-center justify-between font-bold text-sm text-white uppercase no-underline">
 					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home">Home</a></li>
 					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home/About">About</a></li>
+					<li><a class="hover:text-gray-200 hover:underline px-4" href="/Home/FAQ">FAQ</a></li>
 				</ul>
 			</nav>
 
@@ -63,6 +64,7 @@
 		<div class="w-full container mx-auto flex flex-col items-center">
 			<div class="flex flex-col md:flex-row text-center md:text-left md:justify-between py-6">
 				<a href="/Home/About" class="uppercase px-3">About Us</a>
+				<a href="/Home/FAQ" class="uppercase px-3">FAQ</a>
 				<a href="/Home/Privacy" class="uppercase px-3">Privacy Policy</a>
 				<a href="/Home/Terms" class="uppercase px-3">Terms & Conditions</a>
 			</div>

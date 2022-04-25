@@ -12,14 +12,14 @@ namespace FerpaAnalisisApp.Models
         {
             using (var context = new ApplicationDbContext(serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
-                //if(context.Question.Any() && context.DocumentType.Any())
-                //{
-                //    return;
-                //}
-                // Look for any movies.
+                if (context.Question.Any() && context.DocumentType.Any())
+                {
+                    return;
+                }
+
                 //AddocumentType(context);
                 //AddQuestions(context);
-                //context.SaveChanges();
+                context.SaveChanges();
             }
 
         }
@@ -60,21 +60,21 @@ namespace FerpaAnalisisApp.Models
                 new Question
                 {
                     QuestionDescription = "FERPA stands for:",
-                    DocumentTypeId = 10,
+                    DocumentTypeId = 4,
                     Answers = "Family Educational Rights and Privacy Act,Famous Entertainers Reserve all Peoples Amphetamines,False Enjoyment Rigorously Punishes Adherents,Family Enhancement Righteous Pastoral Association",
                     CorrectAnswerNumber = 1
                 },
                 new Question
                 {
                     QuestionDescription = "The rights over student’s information transfer from the student’s guardians to the student himself when he turns 18 years old",
-                    DocumentTypeId = 10,
+                    DocumentTypeId = 4,
                     Answers = "True,False",
                     CorrectAnswerNumber = 1
                 },
                 new Question
                 {
                     QuestionDescription = "Question",
-                    DocumentTypeId = 10,
+                    DocumentTypeId = 4,
                     Answers = "True,False",
                     CorrectAnswerNumber = 2
                 },
@@ -82,21 +82,21 @@ namespace FerpaAnalisisApp.Models
                 new Question
                 {
                     QuestionDescription = "PII stands for:",
-                    DocumentTypeId = 11,
+                    DocumentTypeId = 5,
                     Answers = "Portable Information Identifier,Participant Informative Information,Personally Identifiable Information,Potential Impediment Inclement",
                     CorrectAnswerNumber = 3
                 },
                 new Question
                 {
                     QuestionDescription = "Is your Date of Birth considered PII",
-                    DocumentTypeId = 11,
+                    DocumentTypeId = 5,
                     Answers = "True,False",
                     CorrectAnswerNumber = 1
                 },
                 new Question
                 {
                     QuestionDescription = "Are using VPNs considered a good practice to protect PII?",
-                    DocumentTypeId = 11,
+                    DocumentTypeId = 5,
                     Answers = "True,False",
                     CorrectAnswerNumber = 1
                 },
@@ -104,21 +104,21 @@ namespace FerpaAnalisisApp.Models
                 new Question
                 {
                     QuestionDescription = "HIPAA stands for:",
-                    DocumentTypeId = 12,
+                    DocumentTypeId = 6,
                     Answers = "Health Internal Portable Accounting Act,Heavy Internal Permissible Accountable Activity,Health Insurance Portability and Accountability Act,Honest Insurance Portability Accountable Admission",
                     CorrectAnswerNumber = 3
                 },
                 new Question
                 {
                     QuestionDescription = "Is Healthcare one of the entities that could be subject to the privacy rule involved in HIPAA?",
-                    DocumentTypeId = 12,
+                    DocumentTypeId = 6,
                     Answers = "True,False",
                     CorrectAnswerNumber = 1
                 },
                 new Question
                 {
                     QuestionDescription = "Does Law Enforcement have the right to get your personal health information without your consent?",
-                    DocumentTypeId = 12,
+                    DocumentTypeId = 6,
                     Answers = "True,False",
                     CorrectAnswerNumber = 2
                 }

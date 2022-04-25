@@ -16,6 +16,35 @@ namespace FerpaAnalisisApp.Controllers
             _context = context;
             this._hostEnvironment = hostEnvironment;
         }
+        public void UpdateMenu()
+        {
+            //MENU
+            bool AllFERPACompleted = false;
+            bool AllPIICompleted = false;
+            bool AllHIPAACompleted = false;
+            if (User.Identity.IsAuthenticated)
+            {
+                var docTypeFERPA = _context.DocumentType.FirstOrDefault(x => x.Title == "FERPA").DocumentTypeId;
+                var docTypePII = _context.DocumentType.FirstOrDefault(x => x.Title == "PII").DocumentTypeId;
+                var docTypeHIPAA = _context.DocumentType.FirstOrDefault(x => x.Title == "HIPAA").DocumentTypeId;
+
+                var userID = _context.Users.FirstOrDefault(x => x.UserName == User.Identity.Name).Id;
+
+                var totalQuestionFERPA = _context.Question.Where(x => x.DocumentTypeId == docTypeFERPA).Count();
+                var totalQuestionPII = _context.Question.Where(x => x.DocumentTypeId == docTypePII).Count();
+                var totalQuestionHIPAA = _context.Question.Where(x => x.DocumentTypeId == docTypeHIPAA).Count();
+
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA))
+                    AllFERPACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeFERPA).TotalCorrect == totalQuestionFERPA;
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypePII))
+                    AllPIICompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypePII).TotalCorrect == totalQuestionPII;
+                if (_context.StatisticDocumentType.Any(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA))
+                    AllHIPAACompleted = _context.StatisticDocumentType.FirstOrDefault(x => x.UserID == userID && x.DocumentTypeId == docTypeHIPAA).TotalCorrect == totalQuestionHIPAA;
+            }
+            ViewBag.AllFERPACompleted = AllFERPACompleted;
+            ViewBag.AllPIICompleted = AllPIICompleted;
+            ViewBag.AllHIPAACompleted = AllHIPAACompleted;
+        }
         public IActionResult Index()
         {
             var ferpaID = _context.DocumentType.FirstOrDefault(x => x.Title == "PII").DocumentTypeId;
@@ -45,6 +74,8 @@ namespace FerpaAnalisisApp.Controllers
                 tmp.Answers = tmpAnswerList;
                 listaVM.Add(tmp);
             }
+
+            UpdateMenu();
             return View(listaVM);
         }
     }
