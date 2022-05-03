@@ -13,4 +13,4 @@ Team:
 - [Cullen Davis](https://github.com/CDavis47) | cullend@clemson.edu
 - [Roger Rivas](https://github.com/RogerSmithR) | rrivasg@clemson.edu
 - [Connor McCoy](https://github.com/jcmccoysc) | jmccoy7@clemson.edu
-- [Kunal Bajaj](#) | kbajaj@clemson.edu
+- [Kunal Bajaj](https://github.com/kbajaj200) | kbajaj@clemson.edu
